@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id         String    @id @default(uuid())
+  name       String
+  email      String
+  password   String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  detailsUser       DetailsUser[]
+  meals             Meals[]
+  likesFoods        LikesFoods[]
+  publication       Publications[]
+  likespublications LikesPublications[]
+}
+
+model DetailsUser {
+  id         String    @id @default(uuid())
+  peso       Int
+  altura     Int
+  idade      Int
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  user_id String
+  users   Users  @relation(fields: [user_id], references: [id])
+}
+
+model LikesFoods {
+  id         String    @id @default(uuid())
+  user_id    String
+  food_id    String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  users Users @relation(fields: [user_id], references: [id])
+  foods Foods @relation(fields: [food_id], references: [id])
+}
+
+model Foods {
+  id           String    @id @default(uuid())
+  nome         String
+  description  String
+  kcal         Int
+  protein      Int
+  carbohydrate Int
+  fat          Int
+  likes        Int
+  created_at   DateTime? @default(now())
+  updated_at   DateTime? @default(now())
+
+  medals     Meals[]
+  likesFoods LikesFoods[]
+}
+
+model Meals {
+  id           String    @id @default(uuid())
+  quantity     Int
+  kcal         Int
+  fata         Int
+  carbohydrate Int
+  protein      Int
+  created_at   DateTime? @default(now())
+  updated_at   DateTime? @default(now())
+
+  publications Publications[]
+
+  users   Users  @relation(fields: [user_id], references: [id])
+  user_id String
+
+  Foods   Foods?  @relation(fields: [food_id], references: [id])
+  food_id String?
+
+  mealtime    MealTime @relation(fields: [mealtime_id], references: [id])
+  mealtime_id String
+}
+
+model MealTime {
+  id         String    @id @default(uuid())
+  nome       String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  meals Meals[]
+}
+
+model Publications {
+  id         String    @id @default(uuid())
+  nome       String
+  url        String
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  users Users @relation(fields: [user_id], references: [id])
+  meals Meals @relation(fields: [meal_id], references: [id])
+
+  user_id           String
+  meal_id           String
+  likespublications LikesPublications[]
+}
+
+model LikesPublications {
+  id           String @id @default(uuid())
+  user_id      String
+  pubcation_id String
+
+  users        Users        @relation(fields: [user_id], references: [id])
+  publications Publications @relation(fields: [pubcation_id], references: [id])
+}
