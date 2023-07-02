@@ -12,6 +12,7 @@ class PostDataService {
     }
 
     const postData = await prismaClient[table].create(data);
+    console.log(postData);
     if (!postData) {
       throw new Error("Algo aconteceu, tente novamente.");
     }
